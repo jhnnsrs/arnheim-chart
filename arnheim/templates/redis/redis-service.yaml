@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    service: redis
+    environment: production
+spec:
+  selector:
+    service: redis
+  type: NodePort
+  ports:
+  - name: redisport
+    port:  {{ .Values.redis.port }}
+    targetPort: {{ .Values.redis.port }}
+status:
+  loadBalancer: {}

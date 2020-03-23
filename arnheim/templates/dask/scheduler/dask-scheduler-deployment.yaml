@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-scheduler
+  labels:
+    service: dask-scheduler
+    environment: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: dask-scheduler
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        service: dask-scheduler
+    spec:
+      containers:
+        - name: dask-scheduler
+          image: jhnnsrs/dask:latest
+          imagePullPolicy: Always
+          args:
+            - dask-scheduler
+            - "--dashboard-prefix=daskboard"
+          ports:
+            - name: daskport
+              containerPort: 8786
+              protocol: TCP
+            - name: webuiport
+              containerPort: 8787
+              protocol: TCP

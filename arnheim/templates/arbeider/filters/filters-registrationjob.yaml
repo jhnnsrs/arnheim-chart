@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: filters-registration
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "1"
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: arnheim-filters
+          image: jhnnsrs/arnheim-filters
+          imagePullPolicy: Always
+          command: ["python"]
+          args: ["/arbeider/manage.py", "discoverworkers"]
+          resources: {}
+          env:
+            - name: ARNHEIM_DEBUG
+              value: {{ .Values.debug | quote }}
+            - name: ARNHEIM_LOGGING
+              value: {{ .Values.logging | quote }}
+            - name: ARNHEIM_DOMAIN
+              value: {{ .Values.bergen.domain | quote }}
+            - name: ARNHEIM_KEY
+              value: {{ .Values.bergen.secret | quote}}
+            - name: DASK_SCHEDULER_ADDRESS
+              value: "Notset"
+            - name: DASK_SCHEDULER_HOST
+              value: {{ .Values.dask.schedulerHost | quote}}
+            - name: DASK_SCHEDULER_PORT
+              value: {{ .Values.dask.schedulerPort | quote }}
+            - name: DJANGO_LOG_LEVEL
+              value: "INFO"
+            - name: POSTGRES_DB
+              value: {{ .Values.postgres.db | quote}}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgres.password | quote}}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgres.user | quote}}
+            - name: ARNHEIM_SQL_ENGINE
+              value: "django.db.backends.postgresql"
+      initContainers:
+        - name: waitforpostgres
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for postgres; sleep 2; done"]
+

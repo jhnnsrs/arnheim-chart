@@ -1,0 +1,54 @@
+# Default values for arnheim.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+debug: "True"
+logging: "True"
+
+arnheim:
+  super:
+    email: jhnnsrs@gmail.com
+    password: gibab42
+    username: jhnnsrs
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+
+redis:
+  port: 6379
+
+
+
+arbeiders:
+  - name: arnheim-filters
+    image: jhnnsrs/arnheim-filters
+
+
+dask:
+  schedulerHost: "dask-scheduler"
+  schedulerPort: 8786
+
+postgres:
+  port: 5432
+  host: "postgres"
+  user: "jhnnsrs"
+  db: "nana"
+  password: "osinfoienofinoseinfosienf"
+
+bergen:
+  port: 8080
+  replicaCount: 1
+  domain: "localhost"
+  secret: "osinoinoinfsoinefoisnefoisne"
+
+
+scheduler:
+  image: "jhnnsrs/dask"
+
+
+verge:
+  type: NodePort
+  port: 8080
+
+

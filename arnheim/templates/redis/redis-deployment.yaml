@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    service: redis
+    environment: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: redis
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        service: redis
+    spec:
+      containers:
+      - image: redis:latest
+        imagePullPolicy: ""
+        name: redis
+        resources: {}
+        ports:
+           - containerPort: {{ .Values.redis.port }}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

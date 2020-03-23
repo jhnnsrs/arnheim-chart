@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: verge
+  labels:
+    service: verge
+    environment: production
+spec:
+  selector:
+    service: verge
+  type: NodePort
+  ports:
+  - name: http
+    port:  {{ .Values.verge.port }}
+    targetPort: 80
+status:
+  loadBalancer: {}

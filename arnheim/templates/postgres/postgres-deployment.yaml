@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: postgres
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        service: postgres
+    spec:
+      containers:
+      - image: postgres:12.2-alpine
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.postgres.db | quote}}
+        - name: POSTGRES_PASSWORD
+          value: {{ .Values.postgres.password | quote}}
+        - name: POSTGRES_PORT
+          value: {{ .Values.postgres.port | quote }}
+        - name: POSTGRES_USER
+          value: {{ .Values.postgres.user | quote}}
+        imagePullPolicy: ""
+        name: postgres
+        resources: {}
+        ports:
+          - name: postgresport
+            containerPort: {{ .Values.postgres.port }}
+            protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgresdata
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: postgresdata
+        persistentVolumeClaim:
+          claimName: postgresdata
+status: {}

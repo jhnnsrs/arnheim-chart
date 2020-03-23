@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: verge-conf
+data:
+  nginx.conf: |
+    worker_processes  3;
+    error_log  /var/log/nginx/error.log;
+    events {
+      worker_connections  10240;
+    }
+
+    http {
+      upstream channels-backend {
+              server localhost:8000;
+      }
+
+      log_format  main
+              'remote_addr:$remote_addr\t'
+              'time_local:$time_local\t'
+              'method:$request_method\t'
+              'uri:$request_uri\t'
+              'host:$host\t'
+              'status:$status\t'
+              'bytes_sent:$body_bytes_sent\t'
+              'referer:$http_referer\t'
+              'useragent:$http_user_agent\t'
+              'forwardedfor:$http_x_forwarded_for\t'
+              'request_time:$request_time';
+      access_log	/var/log/nginx/access.log main;
+
+      server {
+          listen       *:80;
+          server_name  {{ .Values.bergen.domain }};
+
+          location /images {
+                alias /media;
+                add_header X-Clacks-Overhead "GNU Terry Pratchett";
+                add_header X-Clacks-Overhead "GNU Terry Pratchet";
+                add_header 'Access-Control-Allow-Credentials' 'true';
+                add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,x-ijt';
+
+                add_header 'Access-Control-Allow-Origin' '*';
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+
+                if ($request_filename ~* ^.*?/([^/]*?)$) {
+                  set $filename $1;
+                }
+
+
+                if ($filename ~* ^.*?\.((nii.gz)|(nii)|(gz))$) {
+                  add_header Content-Disposition 'inline; filename="$filename"';
+                  add_header Content-Type "application/gzip";
+                  add_header 'Access-Control-Allow-Origin' '*';
+                  add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                }
+          }
+
+          location / {
+                add_header X-Clacks-Overhead "GNU Terry Pratchett";
+                add_header X-Clacks-Overhead "GNU Terry Pratchet";
+                add_header 'Access-Control-Allow-Credentials' 'true';
+                add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,x-ijt';
+
+                client_max_body_size 8000M;
+                client_body_buffer_size 8000M;
+                client_body_timeout 120;
+
+                try_files $uri @proxy_to_app;
+          }
+
+          location @proxy_to_app {
+            proxy_pass http://channels-backend;
+
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+
+            proxy_redirect off;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $server_name;
+          }
+      }
+    }

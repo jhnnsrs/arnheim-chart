@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-worker
+  labels:
+    service: dask-worker
+    environment: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: dask-worker
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        service: dask-worker
+    spec:
+      containers:
+        - name: worker
+          image: jhnnsrs/dask:latest
+          imagePullPolicy: Always
+          args:
+            - dask-worker
+            - "tcp://dask-scheduler-service:8786"
+      initContainers:
+        - name: waitforscheduler
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup dask-scheduler.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for dask-scheduler; sleep 2; done"]
