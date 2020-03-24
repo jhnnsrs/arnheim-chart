@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  arnheim:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-03-24T10:31:13.481201128Z"
+    description: A Helm chart for the Arnheim Platform
+    digest: b236a3f0d518c3cb01e490c4c997c5c82fddcae1f01e17d74804c96e3bf95807
+    name: arnheim
+    type: application
+    urls:
+    - https://github.com/jhnnsrs/arnheim-chart/releases/download/arnheim-0.1.0/arnheim-0.1.0.tgz
+    version: 0.1.0
+generated: "2020-03-24T10:31:13.36734822Z"
