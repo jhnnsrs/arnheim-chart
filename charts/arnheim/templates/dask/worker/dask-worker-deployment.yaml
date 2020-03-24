@@ -23,7 +23,7 @@ spec:
           imagePullPolicy: Always
           args:
             - dask-worker
-            - "tcp://dask-scheduler-service:8786"
+            - "tcp://dask-scheduler:8786"
       initContainers:
         - name: waitforscheduler
           image: busybox:1.28

@@ -7,9 +7,9 @@ logging: "True"
 
 arnheim:
   super:
-    email: jhnnsrs@gmail.com
-    password: gibab42
-    username: jhnnsrs
+    email: root@root.com
+    password: root
+    username: admin
 
 image:
   repository: nginx
